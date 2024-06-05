@@ -1,0 +1,118 @@
+body {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    font-family: "Nanum Gothic", sans-serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+h1{
+    font-size: 2.25em;
+}
+
+#intro{
+    font-style: italic;
+    font-size: 0.75em;
+    margin-bottom: 3.5em;
+}
+
+.total{
+    font-size: 1.5em;
+}
+
+#game-container {
+    text-align: center;
+    background-color: rgba(187, 228, 238, 0.705);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+
+#click-button {
+    padding: 10px;
+    width: 170px;
+    height: 170px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    border: 1px solid black;
+    border-radius: 50%;
+    background-image: url('./img/calecon.png');
+    background-size: cover;
+    background-position: center;
+}
+
+
+#buttons-container {
+    font-size: 0.95em;
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.button-container {
+    margin: 10px;
+    width: 250px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+    background-color: rgba(124, 178, 240, 0.308);
+}
+
+.button-container:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.button-container button {
+    padding: 10px 15px;
+    font-size: 0.75em;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 90%;
+}
+
+.button-container button:enabled {
+    background-color: #007bff;
+}
+
+.button-container button:disabled {
+    background-color: #ccc;
+}
+
+.button-container button:hover:enabled {
+    background-color: #0056b3;
+}
+
+.resizing {
+    font-size: 0.75em;
+}
+
+.click-effect {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
+.button-image {
+    width: 75px;   
+    height: auto;
+    margin-top: 3px;
+    border-radius: 50%;
+}
+
+.click-count{
+    margin-bottom: -5px;
+    margin-top: -5px;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clicker Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="game-container">
+        <h1>Gros paquet simulator</h1>
+        <p id="intro">Cliques sur le gros paquet pour augmenter tes centimètres!</p>
+        <p class="resizing, total">Centimètres acquis : <span id="score">0</span></p>
+        <p id="score-per-second" class="resizing">Centimètres gagnés par seconde: 0.00</p>
+        <p id="click-damage" class="resizing">Centimètres gagnés par clic: 1.00</p>
+        <button id="click-button"></button>
+        <div id="buttons-container"></div>
+        <button id="reset-button">Réinitialiser le jeu</button>
+
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
