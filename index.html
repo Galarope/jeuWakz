@@ -12,17 +12,20 @@
 </head>
 
 <body>
-    <div id="game-container">
+      <div id="game-container">
         <h1>Gros paquet simulator</h1>
-        <p id="intro">Cliques sur le gros paquet pour augmenter tes centimètres!</p>
+        <p id="intro">Clique sur le gros paquet pour augmenter tes centimètres!</p>
         <p class="resizing, total">Centimètres acquis : <span id="score">0</span></p>
         <p id="score-per-second" class="resizing">Centimètres gagnés par seconde: 0.00</p>
         <p id="click-damage" class="resizing">Centimètres gagnés par clic: 1.00</p>
+
+        <button id="mute-button">🔇</button>
         <button id="click-button"></button>
         <div id="buttons-container"></div>
         <button id="reset-button">Réinitialiser le jeu</button>
 
     </div>
+    <audio id="click-sound" src="./sound.mp3" preload="auto"></audio>
     <script src="app.js"></script>
 </body>
 

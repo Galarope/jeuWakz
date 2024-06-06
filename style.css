@@ -1,10 +1,12 @@
 body {
-    display: flex;
+    flex-direction: column;
     justify-content: center;
     margin: 0;
     font-family: "Nanum Gothic", sans-serif;
     font-weight: 500;
     font-style: normal;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.856);
 }
 
 h1{
@@ -23,24 +25,21 @@ h1{
 
 #game-container {
     text-align: center;
-    background-color: rgba(187, 228, 238, 0.705);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgb(247, 245, 245);
 }
-
-
 
 #click-button {
     padding: 10px;
-    width: 170px;
-    height: 170px;
+    width: 300px;
+    height: 350px;
     font-size: 16px;
     margin-top: 10px;
     cursor: pointer;
-    border: 1px solid black;
-    border-radius: 50%;
-    background-image: url('./img/calecon.png');
+    border: 2px solid rgb(52, 61, 187);
+    border-radius: 10px;
+    background-image: url('./img/wakzCalecon.png');
     background-size: cover;
     background-position: center;
 }
@@ -90,6 +89,7 @@ h1{
 
 .button-container button:disabled {
     background-color: #ccc;
+    color: black
 }
 
 .button-container button:hover:enabled {
@@ -115,4 +115,20 @@ h1{
 .click-count{
     margin-bottom: -5px;
     margin-top: -5px;
+}
+
+#mute-button{
+    width: 50px;
+    height: 50px;
+    font-size: 2em;
+    border: 2px blue solid;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 1;
+}
+
+#score{
+    background-color: #77b2f19f;
+    padding: 5px;
+    border-radius: 5px;
 }
