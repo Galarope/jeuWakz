@@ -86,7 +86,7 @@ document.getElementById('click-button').addEventListener('click', () => {
 
 document.getElementById('mute-button').addEventListener('click', () => {
     isMuted = !isMuted;
-    document.getElementById('mute-button').innerText = isMuted ? '📣' : '🔇';
+    document.getElementById('mute-button').innerText = isMuted ? '🔇' : '📣';
 });
 
 
