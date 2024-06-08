@@ -91,7 +91,7 @@ document.getElementById('mute-button').addEventListener('click', () => {
 
 
 function calculateInitialPrice(index) {
-    const exponentMultiplier = index < 10 ? 1.1 : index < 20 ? 1.22 : 1.24;
+    const exponentMultiplier = index < 10 ? 1.35 : index < 20 ? 1.45 : 1.5;
     if (index < 10) {
         return basePrice * Math.pow(8, index) * Math.pow(exponentMultiplier, buttonClicks[index]);
     } else if (index < 20) {
@@ -105,10 +105,24 @@ function calculateInitialPrice(index) {
 
 
 function formatNumber(number) {
-    if (number >= 1e9) {
-        return (number / 1e9).toFixed(2) + ' Mrd';
+    if (number >= 1e30) {
+        return (number / 1e30).toFixed(2) + ' octillions';
+    } else if (number >= 1e27) {
+        return (number / 1e27).toFixed(2) + ' septillions';
+    } else if (number >= 1e24) {
+        return (number / 1e24).toFixed(2) + ' sextillions';
+    } else if (number >= 1e21) {
+        return (number / 1e21).toFixed(2) + ' quintillions';
+    } else if (number >= 1e18) {
+        return (number / 1e18).toFixed(2) + ' quadrillions';
+    } else if (number >= 1e15) {
+        return (number / 1e15).toFixed(2) + ' trillions';
+    } else if (number >= 1e12) {
+        return (number / 1e12).toFixed(2) + ' billions';
+    } else if (number >= 1e9) {
+        return (number / 1e9).toFixed(2) + ' milliards';
     } else if (number >= 1e6) {
-        return (number / 1e6).toFixed(2) + ' M';
+        return (number / 1e6).toFixed(2) + ' millions';
     } else if (number >= 1e3) {
         return (number / 1e3).toFixed(2) + ' K';
     } else {
@@ -137,24 +151,24 @@ function createButton(index) {
     button.addEventListener('click', () => {
         if (score >= buttons[index].price()) {
             score -= buttons[index].price();
-            let incrementFactor = 0.005;  
+            let incrementFactor = 0.0075;  
     
             if (buttonClicks[index] >= 25) {
-                incrementFactor = 0.1;  
-            } else if (buttonClicks[index] >= 10) {
                 incrementFactor = 0.04;  
+            } else if (buttonClicks[index] >= 10) {
+                incrementFactor = 0.02;  
             } else if (buttonClicks[index] >= 1) {
-                incrementFactor = 0.015;  
+                incrementFactor = 0.0075;  
             }
     
-            scorePerSecond += buttons[index].price() * incrementFactor;
-            clickDamage += buttons[index].price() * (incrementFactor * 1.25);
+            scorePerSecond += buttons[index].initialPrice * incrementFactor;
+            clickDamage += buttons[index].initialPrice * (incrementFactor * 1.15);
             buttonClicks[index]++;
             clickCount.innerText = `Possédé :  ${buttonClicks[index]}`;
             buttons[index].updatePrice();
             updateScoreDisplay();
             updateButtons();
-
+    
             lastTimestamp = 0;
             window.requestAnimationFrame(incrementScore);
         }
@@ -173,6 +187,7 @@ function createButton(index) {
     
         saveGameData();
     });
+    
 
     const image = document.createElement('img');
     image.src = buttonImages[index];
@@ -183,24 +198,26 @@ function createButton(index) {
     buttonContainer.appendChild(button);
     buttonContainer.appendChild(clickCount);
     buttonContainer.appendChild(image);
-    
+
     buttons.push({
         element: buttonContainer,
         price: () => buttons[index].currentPrice,
         updatePrice: function () {
-            let priceMultiplier = 1.15; 
+            let priceMultiplier = 1.5; 
             if (buttonClicks[index] >= 25) {
                 priceMultiplier = 2.0;  
             } else if (buttonClicks[index] >= 10) {
-                priceMultiplier = 1.4;  
+                priceMultiplier = 1.8;  
             }
             this.currentPrice = Math.floor(this.currentPrice * priceMultiplier);
             this.element.querySelector('.button').innerText = `${formatNumber(this.currentPrice)} centimètres`;
         },
+        initialPrice: initialPrice, 
         currentPrice: initialPrice
     });
     document.getElementById('buttons-container').appendChild(buttonContainer);
 }
+
 
 
 function updateButtons() {
@@ -244,7 +261,6 @@ function checkButtonAffordability() {
 
 setInterval(checkButtonAffordability, 1000);
 
-//setInterval(incrementScore, 1000);
 window.requestAnimationFrame(incrementScore);
 document.getElementById('reset-button').addEventListener('click', () => {
     const confirmation = confirm("Êtes-vous sûr de vouloir réinitialiser le jeu ?");
@@ -292,7 +308,8 @@ function loadGameData() {
                 clickCountElement.innerText = `Possédé :  ${buttonClicks[i]}`;
             }
 
-            buttons[i].currentPrice = calculateInitialPrice(i) * Math.pow(1.08, buttonClicks[i]);
+            buttons[i].initialPrice = calculateInitialPrice(i); 
+            buttons[i].currentPrice = buttons[i].initialPrice * Math.pow(1.15, buttonClicks[i]);
             const buttonElement = buttonContainer.querySelector('.button');
             if (buttonElement) {
                 buttonElement.innerText = `${formatNumber(buttons[i].currentPrice)} centimètres`;
@@ -303,6 +320,8 @@ function loadGameData() {
     updateScoreDisplay();
     updateButtons();
 }
+
+
 
 loadGameData();
 
@@ -326,6 +345,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 200);
     });
 });
-
-
-

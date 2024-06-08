@@ -1,12 +1,16 @@
 body {
-    flex-direction: column;
-    justify-content: center;
+    display: flex;
+    flex-direction: column; 
     margin: 0;
     font-family: "Nanum Gothic", sans-serif;
     font-weight: 500;
     font-style: normal;
     color: white;
     background-color: rgba(0, 0, 0, 0.856);
+}
+
+button:hover{
+    cursor: pointer;
 }
 
 h1{
@@ -24,20 +28,22 @@ h1{
 }
 
 #game-container {
+    display: flex;
+    flex-direction: row;
     text-align: center;
+    justify-content: center;
+    gap: 2em;
+    margin: auto;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgb(247, 245, 245);
 }
 
 #click-button {
-    padding: 10px;
     width: 300px;
-    height: 350px;
+    height: 450px;
     font-size: 16px;
     margin-top: 10px;
     cursor: pointer;
-    border: 2px solid rgb(52, 61, 187);
+    border: 1px solid rgb(68, 77, 201);
     border-radius: 10px;
     background-image: url('./img/wakzCalecon.png');
     background-size: cover;
@@ -56,7 +62,7 @@ h1{
 .button-container {
     margin: 10px;
     width: 250px;
-    height: 200px;
+    height: 195px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -118,9 +124,9 @@ h1{
 }
 
 #mute-button{
-    width: 50px;
-    height: 50px;
-    font-size: 2em;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5em;
     border: 2px blue solid;
     border-radius: 50%;
     position: absolute;
@@ -131,4 +137,117 @@ h1{
     background-color: #77b2f19f;
     padding: 5px;
     border-radius: 5px;
+}
+
+#click-part {
+    position: fixed; 
+    left: 2.5em; 
+    top: 5.4em;
+    width: 30%; 
+    height: 80vh; 
+    overflow: hidden; 
+    border-radius: 15px;
+    background-color: rgba(160, 193, 231, 0.274);
+    border: 1px solid rgba(104, 167, 240, 0.308);
+}
+
+
+#buy-part{
+    width: 60%; 
+    overflow-y: auto; 
+    margin-left: 33%;
+    margin-top: 2.5em;
+    height: 92vh;
+    border: 1px solid rgba(104, 167, 240, 0.308);
+    border-radius: 15px;
+    background-color: rgba(160, 193, 231, 0.274);
+}
+
+#btn-and-reset{
+    display: flex;
+    flex-direction: column;
+    width: 10em;
+    margin: auto;
+    align-items: center;
+}
+
+#reset-button{
+    margin-top: 2em;
+    background-color: rgb(221, 126, 126);
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid rgb(87, 87, 240);
+}
+
+@media only screen and (max-width: 600px) {
+
+    h1{
+        font-size: 1.5em;
+    }
+
+    p{
+        font-size: 0.75em;
+    }
+
+    #game-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5em;
+    }
+
+
+    #click-button{
+        height: 200px;
+        width: 100%;
+    }
+
+    #click-part {
+        position: relative;
+        width: 95%;
+        margin: auto;
+        top: auto;
+        left: auto;
+        height: 50vh;
+    }
+
+    #buy-part {
+        width: 95%;
+        margin-left: 0;
+        margin-top: 0em;
+    }
+
+    #mute-button {
+        /* position: static; */
+        margin-top: 0.1em;
+        margin-left: -5.5em;
+    }
+
+    .total{
+        font-size: 1em;
+    }
+
+    #intro{
+        display: none;
+    }
+
+    #reset-button{
+        margin-top: 0.5em;
+        font-size: 0.75em;
+    }
+
+    .button-container{
+        height: 152px;
+    }
+
+    .button-container span{
+        font-size: 0.8em;
+    }
+
+    .button-image{
+        width: 50px;
+    }
+
+    .button-container button{
+        padding: 5px;
+    }
 }
