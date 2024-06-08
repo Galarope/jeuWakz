@@ -1,3 +1,8 @@
+/**
+ * @file Clicker Game Script
+ * @description Script for a clicker game where players buy characters to increase their score.
+ */
+
 let score = 0;
 let scorePerSecond = 0;
 let clickDamage = 1;
@@ -68,10 +73,64 @@ const buttonImages = [
     "./img/wakz.png",     
 ];
 
+document.querySelector(".patch").addEventListener("click", () => {
+    const overlay = document.createElement("div");
+    overlay.classList.add("overlay");
+    
+    document.body.appendChild(overlay);
+    
+    const popup = document.createElement("div");
+    popup.classList.add("popup");
+    
+    
+    const popupContent = document.createElement("div");
+    popupContent.innerHTML = `- Le bonus de cm/seconde et de cm/clic et maintenant calculé en fonction du prix initial du bouton, et non pas en fonction de son prix évolutif. Les valeurs ont également été réduites.<br><br>
+                                
+                                - Augmentation du prix du bouton de base<br><br>
+
+                                - Augmentation du prix d'un bouton en fonction du nombre d'achats : 1-10 achats ➡️ x1.5, 11-25 achats ➡️ x1.8, 26 achats et plus ➡️ x2<br><br>
+
+                                - Changement du formatage des nombres (jusqu'aux octillions maintenant)<br><br>
+
+                                - Changement du style, avec la partie du clique sur la droite et qui reste affichée lors du défilement des personnages (responsivité ok mais à revoir)<br><br>
+
+                                - Multiplicateur x2 des dégâts d'un perso tout les 10 achats du même personnage<br><br>
+
+                                - Ajout du patch note
+`;
+
+    popup.appendChild(popupContent);
+    
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "Fermer";
+    closeButton.addEventListener("click", () => {
+        document.body.removeChild(overlay);
+        document.body.removeChild(popup);
+    });
+    popup.appendChild(closeButton);
+    
+    document.body.appendChild(popup);
+    
+    document.addEventListener("click", closePopup);
+    
+    function closePopup(event) {
+        if (!popup.contains(event.target) && event.target !== document.querySelector(".patch")) {
+            document.body.removeChild(overlay);
+            document.body.removeChild(popup);
+            document.removeEventListener("click", closePopup);
+        }
+    }
+});
+
+
 const buttonClicks = new Array(30).fill(0);
 
 let isMuted = false;
 
+/**
+ * Handles the click event for the main button.
+ * Increases the score by the current click damage and plays a sound if not muted.
+ */
 document.getElementById('click-button').addEventListener('click', () => {
     score += clickDamage;
     updateScoreDisplay();
@@ -84,12 +143,20 @@ document.getElementById('click-button').addEventListener('click', () => {
     }
 });
 
+/**
+ * Toggles the sound on and off.
+ */
 document.getElementById('mute-button').addEventListener('click', () => {
     isMuted = !isMuted;
     document.getElementById('mute-button').innerText = isMuted ? '🔇' : '📣';
 });
 
-
+/**
+ * Calculates the initial price of a button based on its index and the number of clicks.
+ * 
+ * @param {number} index - The index of the button.
+ * @returns {number} - The initial price of the button.
+ */
 function calculateInitialPrice(index) {
     const exponentMultiplier = index < 10 ? 1.35 : index < 20 ? 1.45 : 1.5;
     if (index < 10) {
@@ -103,7 +170,12 @@ function calculateInitialPrice(index) {
     }
 }
 
-
+/**
+ * Formats a number into a readable string with appropriate suffixes.
+ * 
+ * @param {number} number - The number to format.
+ * @returns {string} - The formatted number string.
+ */
 function formatNumber(number) {
     if (number >= 1e30) {
         return (number / 1e30).toFixed(2) + ' octillions';
@@ -130,6 +202,24 @@ function formatNumber(number) {
     }
 }
 
+/**
+ * doubles the score per second and click damage for a specific character button.
+ * 
+ * @param {number} index - The index of the character button.
+ */
+function doubleCharacterEffect(index) {
+    const initialPrice = buttons[index].initialPrice;
+    const count = buttonClicks[index];
+    const incrementFactor = count >= 25 ? 0.04 : count >= 10 ? 0.02 : 0.0075;
+    scorePerSecond += initialPrice * incrementFactor * count * 2; 
+    clickDamage += initialPrice * (incrementFactor * 1.15) * count * 2; 
+}
+
+/**
+ * Creates a button for purchasing characters.
+ * 
+ * @param {number} index - The index of the button.
+ */
 function createButton(index) {
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'button-container';
@@ -151,8 +241,9 @@ function createButton(index) {
     button.addEventListener('click', () => {
         if (score >= buttons[index].price()) {
             score -= buttons[index].price();
+
             let incrementFactor = 0.0075;  
-    
+
             if (buttonClicks[index] >= 25) {
                 incrementFactor = 0.04;  
             } else if (buttonClicks[index] >= 10) {
@@ -160,7 +251,7 @@ function createButton(index) {
             } else if (buttonClicks[index] >= 1) {
                 incrementFactor = 0.0075;  
             }
-    
+
             scorePerSecond += buttons[index].initialPrice * incrementFactor;
             clickDamage += buttons[index].initialPrice * (incrementFactor * 1.15);
             buttonClicks[index]++;
@@ -168,26 +259,30 @@ function createButton(index) {
             buttons[index].updatePrice();
             updateScoreDisplay();
             updateButtons();
-    
+
             lastTimestamp = 0;
             window.requestAnimationFrame(incrementScore);
+
+            // doubles the damage and score per second every 10 purchases
+            if (buttonClicks[index] % 10 === 0) {
+                doubleCharacterEffect(index);
+            }
+
+            if (name === "Shin le modérafeur : " && buttonClicks[index] === 1) {
+                alert("Félicitations pour avoir acheté le premier modérateur majeur de la chaine. Shin si tu lis ça, sans toi le chat ne serait pas pareil catRose");
+            }
+
+            if (name === "Rianou la feurfadette : " && buttonClicks[index] === 1) {
+                alert("Félicitations pour avoir acheté le deuxième modérateur majeur de la chaine. Rianou si tu lis ça, merci pour tout ce que tu fais pour la chaine de wakz, et pareil sur solary. Tu es le 3ème feur d'esprit catBlob");
+            }
+
+            if (name === "Wakz le challenger bien monté : " && buttonClicks[index] === 1) {
+                alert("Félicitations tu as réussi à sauver la cité ! Le jeu est maintenant terminé, rien d'autre à faire à part monter ton CPS ou recommencer une partie !");
+            }
+
+            saveGameData();
         }
-    
-        if (name === "Shin le modérafeur : " && buttonClicks[index] === 1) {
-            alert("Félicitations pour avoir acheté le premier modérateur majeur de la chaine. Shin si tu lis ça, sans toi le chat ne serait pas pareil catRose");
-        }
-    
-        if (name === "Rianou la feurfadette : " && buttonClicks[index] === 1) {
-            alert("Félicitations pour avoir acheté le deuxième modérateur majeur de la chaine. Rianou si tu lis ça, merci pour tout ce que tu fais pour la chaine de wakz, et pareil sur solary. Tu es notre grande soeur à tous catRose");
-        }
-    
-        if (name === "Wakz le challenger bien monté : " && buttonClicks[index] === 1) {
-            alert("Félicitations, grâce à la plèbe tu as réussi à sauver la cité ! Le jeu est maintenant terminé, rien d'autre à faire à part monter ton CPS ou recommencer une partie !");
-        }
-    
-        saveGameData();
     });
-    
 
     const image = document.createElement('img');
     image.src = buttonImages[index];
@@ -218,14 +313,18 @@ function createButton(index) {
     document.getElementById('buttons-container').appendChild(buttonContainer);
 }
 
-
-
+/**
+ * Updates the state of all buttons based on the current score.
+ */
 function updateButtons() {
     buttons.forEach(button => {
         button.element.querySelector('.button').disabled = score < button.price();
     });
 }
 
+/**
+ * Updates the score display.
+ */
 function updateScoreDisplay() {
     document.getElementById('score').innerText = formatNumber(Math.floor(score));
     document.getElementById('score-per-second').innerText = `Centimètres gagnés par seconde: ${scorePerSecond.toFixed(2)}`;
@@ -233,9 +332,13 @@ function updateScoreDisplay() {
 }
 
 let lastTimestamp = 0;
+/**
+ * Increments the score based on the elapsed time and the score per second.
+ * 
+ * @param {number} timestamp - The current timestamp.
+ */
 function incrementScore(timestamp) {
     if (lastTimestamp === 0) {
-        
         lastTimestamp = timestamp;
     }
 
@@ -247,12 +350,13 @@ function incrementScore(timestamp) {
     window.requestAnimationFrame(incrementScore);
 }
 
-
-
 for (let i = 0; i < 30; i++) {
     createButton(i);
 }
 
+/**
+ * Checks if the player can afford each button and updates their state.
+ */
 function checkButtonAffordability() {
     buttons.forEach(button => {
         button.element.querySelector('.button').disabled = score < button.price();
@@ -262,6 +366,10 @@ function checkButtonAffordability() {
 setInterval(checkButtonAffordability, 1000);
 
 window.requestAnimationFrame(incrementScore);
+
+/**
+ * Resets the game state.
+ */
 document.getElementById('reset-button').addEventListener('click', () => {
     const confirmation = confirm("Êtes-vous sûr de vouloir réinitialiser le jeu ?");
     if (confirmation) {
@@ -272,26 +380,23 @@ document.getElementById('reset-button').addEventListener('click', () => {
             buttonClicks[i] = 0;
         }
 
-        
         updateScoreDisplay();
         updateButtons();
 
-        
         buttons.forEach((button, index) => {
             button.currentPrice = calculateInitialPrice(index);
             button.element.querySelector('.click-count').innerText = `Possédé :  ${buttonClicks[index]}`;
             button.element.querySelector('.button').innerText = `${formatNumber(button.currentPrice)} centimètres`;
         });
 
-        
         saveGameData();
-
-        
         location.reload();
     }
 });
 
-
+/**
+ * Loads the game data from local storage.
+ */
 function loadGameData() {
     score = parseInt(localStorage.getItem('score')) || 0;
     scorePerSecond = parseFloat(localStorage.getItem('scorePerSecond')) || 0;
@@ -321,10 +426,11 @@ function loadGameData() {
     updateButtons();
 }
 
-
-
 loadGameData();
 
+/**
+ * Saves the game data to local storage.
+ */
 function saveGameData() {
     localStorage.setItem('score', score);
     localStorage.setItem('scorePerSecond', scorePerSecond);
