@@ -145,7 +145,8 @@ h1{
     top: 5.4em;
     width: 30%; 
     height: 80vh; 
-    overflow: hidden; 
+    overflow: hidden;
+    overflow: auto; 
     border-radius: 15px;
     background-color: rgba(160, 193, 231, 0.274);
     border: 1px solid rgba(104, 167, 240, 0.308);
