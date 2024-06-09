@@ -62,7 +62,7 @@ h1{
 .button-container {
     margin: 10px;
     width: 250px;
-    height: 195px;
+    height: 250px;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
@@ -112,15 +112,20 @@ h1{
 }
 
 .button-image {
-    width: 75px;   
+    width: 70px;   
     height: auto;
     margin-top: 3px;
     border-radius: 50%;
 }
 
+.bonus-display{
+    font-size: 0.75em;
+}
+
 .click-count{
     margin-bottom: -5px;
     margin-top: -5px;
+    font-size: 1.25em;
 }
 
 #mute-button{

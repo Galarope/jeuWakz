@@ -84,19 +84,12 @@ document.querySelector(".patch").addEventListener("click", () => {
     
     
     const popupContent = document.createElement("div");
-    popupContent.innerHTML = `- Le bonus de cm/seconde et de cm/clic et maintenant calculé en fonction du prix initial du bouton, et non pas en fonction de son prix évolutif. Les valeurs ont également été réduites.<br><br>
-                                
-                                - Augmentation du prix du bouton de base<br><br>
-
-                                - Augmentation du prix d'un bouton en fonction du nombre d'achats : 1-10 achats ➡️ x1.5, 11-25 achats ➡️ x1.8, 26 achats et plus ➡️ x2<br><br>
-
-                                - Changement du formatage des nombres (jusqu'aux octillions maintenant)<br><br>
-
-                                - Changement du style, avec la partie du clique sur la droite et qui reste affichée lors du défilement des personnages (responsivité ok mais à revoir)<br><br>
-
-                                - Multiplicateur x2 des dégâts d'un perso tout les 10 achats du même personnage<br><br>
-
-                                - Ajout du patch note
+    popupContent.innerHTML = ` patch notes du 09/06/2024<br><br>
+    - Augmentation du prix de base des personnages de 10 a 30 par 3 <br><br>
+    - Si le même personnage est acheté plusieurs fois, les valeurs d'augmentation du prix ont été doublées au palier 10 et 25<br><br>
+    - Réduction de 0.05 des bonus au cm/clic à l'achat d'un personnage<br><br>
+    - Affichage du bonus à l'achat d'un personnage<br><br>
+    - Les bonus d'achats multiples sont maintenant appliqués au palier 10 et au palier 25 uniquement
 `;
 
     popup.appendChild(popupContent);
@@ -159,14 +152,15 @@ document.getElementById('mute-button').addEventListener('click', () => {
  */
 function calculateInitialPrice(index) {
     const exponentMultiplier = index < 10 ? 1.35 : index < 20 ? 1.45 : 1.5;
+    const multiplier = 3; 
     if (index < 10) {
         return basePrice * Math.pow(8, index) * Math.pow(exponentMultiplier, buttonClicks[index]);
     } else if (index < 20) {
         const base = basePrice * Math.pow(8, 9);
-        return base * Math.pow(5, index - 9) * Math.pow(exponentMultiplier, buttonClicks[index]);
+        return base * Math.pow(5, index - 9) * Math.pow(exponentMultiplier, buttonClicks[index]) * multiplier;
     } else {
         const base = basePrice * Math.pow(8, 9) * Math.pow(5, 10);
-        return base * Math.pow(2.2, index - 19) * Math.pow(exponentMultiplier, buttonClicks[index]);
+        return base * Math.pow(2.2, index - 19) * Math.pow(exponentMultiplier, buttonClicks[index]) * multiplier;
     }
 }
 
@@ -210,10 +204,12 @@ function formatNumber(number) {
 function doubleCharacterEffect(index) {
     const initialPrice = buttons[index].initialPrice;
     const count = buttonClicks[index];
-    const incrementFactor = count >= 25 ? 0.04 : count >= 10 ? 0.02 : 0.0075;
+    const incrementFactor = count >= 24 ? 0.04 : count >= 9 ? 0.02 : 0.0075;
     scorePerSecond += initialPrice * incrementFactor * count * 2; 
     clickDamage += initialPrice * (incrementFactor * 1.15) * count * 2; 
 }
+
+
 
 /**
  * Creates a button for purchasing characters.
@@ -234,36 +230,55 @@ function createButton(index) {
 
     button.innerText = `${formatNumber(initialPrice)} centimètres`;
 
+    const bonusDisplay = document.createElement('div');
+    bonusDisplay.className = 'bonus-display';
+    bonusDisplay.innerText = `A l'achat : cm/s: 0 , cm/clic: 0`;
+    
     const clickCount = document.createElement('p');
     clickCount.className = 'click-count';
     clickCount.innerText = `Possédé :  ${buttonClicks[index]}`;
+
+
+        const savedBonus = JSON.parse(localStorage.getItem(`buttonBonus_${index}`));
+    if (savedBonus) {
+        bonusDisplay.innerText = `A l'achat : cm/s: ${formatNumber(savedBonus.bonusScorePerSecond)} , cm/clic: ${formatNumber(savedBonus.bonusClickDamage)}`;
+    }
 
     button.addEventListener('click', () => {
         if (score >= buttons[index].price()) {
             score -= buttons[index].price();
 
-            let incrementFactor = 0.0075;  
+            let incrementFactor = 0.0075;
 
-            if (buttonClicks[index] >= 25) {
-                incrementFactor = 0.04;  
-            } else if (buttonClicks[index] >= 10) {
-                incrementFactor = 0.02;  
+            if (buttonClicks[index] >= 24) {
+                incrementFactor = 0.08;
+            } else if (buttonClicks[index] >= 9) {
+                incrementFactor = 0.04;
             } else if (buttonClicks[index] >= 1) {
-                incrementFactor = 0.0075;  
+                incrementFactor = 0.0075;
             }
 
-            scorePerSecond += buttons[index].initialPrice * incrementFactor;
-            clickDamage += buttons[index].initialPrice * (incrementFactor * 1.15);
+            const bonusScorePerSecond = buttons[index].initialPrice * incrementFactor;
+            const bonusClickDamage = buttons[index].initialPrice * (incrementFactor * 1.10);
+
+            scorePerSecond += bonusScorePerSecond;
+            clickDamage += bonusClickDamage;
+
             buttonClicks[index]++;
             clickCount.innerText = `Possédé :  ${buttonClicks[index]}`;
             buttons[index].updatePrice();
             updateScoreDisplay();
             updateButtons();
 
+            // Mettre à jour l'affichage des bonus
+            bonusDisplay.innerText = `A l'achat : cm/s: ${formatNumber(bonusScorePerSecond)} , cm/clic: ${formatNumber(bonusClickDamage)}`;
+
+            // Sauvegarder les bonus dans le localStorage
+            localStorage.setItem(`buttonBonus_${index}`, JSON.stringify({ bonusScorePerSecond, bonusClickDamage }));
+
             lastTimestamp = 0;
             window.requestAnimationFrame(incrementScore);
 
-            // doubles the damage and score per second every 10 purchases
             if (buttonClicks[index] % 10 === 0) {
                 doubleCharacterEffect(index);
             }
@@ -290,28 +305,31 @@ function createButton(index) {
     image.className = 'button-image';
 
     buttonContainer.appendChild(buttonText);
-    buttonContainer.appendChild(button);
-    buttonContainer.appendChild(clickCount);
     buttonContainer.appendChild(image);
+    buttonContainer.appendChild(clickCount);
+    buttonContainer.appendChild(bonusDisplay); 
+    buttonContainer.appendChild(button);
 
     buttons.push({
         element: buttonContainer,
         price: () => buttons[index].currentPrice,
         updatePrice: function () {
-            let priceMultiplier = 1.5; 
-            if (buttonClicks[index] >= 25) {
-                priceMultiplier = 2.0;  
-            } else if (buttonClicks[index] >= 10) {
-                priceMultiplier = 1.8;  
+            let priceMultiplier = 1.5;
+            if (buttonClicks[index] >= 24) {
+                priceMultiplier = 2.0;
+            } else if (buttonClicks[index] >= 9) {
+                priceMultiplier = 1.8;
             }
             this.currentPrice = Math.floor(this.currentPrice * priceMultiplier);
             this.element.querySelector('.button').innerText = `${formatNumber(this.currentPrice)} centimètres`;
         },
-        initialPrice: initialPrice, 
+        initialPrice: initialPrice,
         currentPrice: initialPrice
     });
     document.getElementById('buttons-container').appendChild(buttonContainer);
 }
+
+
 
 /**
  * Updates the state of all buttons based on the current score.
@@ -327,9 +345,10 @@ function updateButtons() {
  */
 function updateScoreDisplay() {
     document.getElementById('score').innerText = formatNumber(Math.floor(score));
-    document.getElementById('score-per-second').innerText = `Centimètres gagnés par seconde: ${scorePerSecond.toFixed(2)}`;
-    document.getElementById('click-damage').innerText = `Centimètres gagnés par clic: ${clickDamage.toFixed(2)}`;
+    document.getElementById('score-per-second').innerText = `Centimètres gagnés par seconde: ${formatNumber(scorePerSecond)}`;
+    document.getElementById('click-damage').innerText = `Centimètres gagnés par clic: ${formatNumber(clickDamage)}`;
 }
+
 
 let lastTimestamp = 0;
 /**
@@ -378,6 +397,7 @@ document.getElementById('reset-button').addEventListener('click', () => {
         clickDamage = 1;
         for (let i = 0; i < buttonClicks.length; i++) {
             buttonClicks[i] = 0;
+            localStorage.removeItem(`buttonBonus_${i}`); 
         }
 
         updateScoreDisplay();
@@ -387,12 +407,19 @@ document.getElementById('reset-button').addEventListener('click', () => {
             button.currentPrice = calculateInitialPrice(index);
             button.element.querySelector('.click-count').innerText = `Possédé :  ${buttonClicks[index]}`;
             button.element.querySelector('.button').innerText = `${formatNumber(button.currentPrice)} centimètres`;
+
+            
+            const bonusDisplay = button.element.querySelector('.bonus-display');
+            if (bonusDisplay) {
+                bonusDisplay.innerText = `A l'achat : cm/s: 0 , cm/clic: 0`;
+            }
         });
 
         saveGameData();
         location.reload();
     }
 });
+
 
 /**
  * Loads the game data from local storage.
@@ -413,11 +440,17 @@ function loadGameData() {
                 clickCountElement.innerText = `Possédé :  ${buttonClicks[i]}`;
             }
 
-            buttons[i].initialPrice = calculateInitialPrice(i); 
+            buttons[i].initialPrice = calculateInitialPrice(i);
             buttons[i].currentPrice = buttons[i].initialPrice * Math.pow(1.15, buttonClicks[i]);
             const buttonElement = buttonContainer.querySelector('.button');
             if (buttonElement) {
                 buttonElement.innerText = `${formatNumber(buttons[i].currentPrice)} centimètres`;
+            }
+
+            const savedBonus = JSON.parse(localStorage.getItem(`buttonBonus_${i}`));
+            const bonusDisplay = buttonContainer.querySelector('.bonus-display');
+            if (savedBonus && bonusDisplay) {
+                bonusDisplay.innerText = `A l'achat : cm/s: ${formatNumber(savedBonus.bonusScorePerSecond)} , cm/clic: ${formatNumber(savedBonus.bonusClickDamage)}`;
             }
         }
     }
@@ -425,6 +458,7 @@ function loadGameData() {
     updateScoreDisplay();
     updateButtons();
 }
+
 
 loadGameData();
 
