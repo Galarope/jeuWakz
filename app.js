@@ -295,7 +295,7 @@ function createButton(index) {
             }
 
             if (name === "Katare l'étalon italien : " && buttonClicks[index] === 1) {
-                alert("Pas grand monde ne semble aimer ce castor. En revanche, castor est amoureux de shin, un amour qui n'est pas réciproque.");
+                alert("MAIS TU PEUX TP BOT PAR PITIÉ");
             }
 
             if (name === "Shin le modérafeur : " && buttonClicks[index] === 1) {
