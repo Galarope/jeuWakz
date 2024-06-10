@@ -11,29 +11,35 @@ const basePrice = 100;
 const buttonNames = [
     "Galaprout le cuistot : ",
     "Babat la petite bibite : ",
+    "Amalinys le daron de twitch : ",
     "Aranha le gorille des îles : ",
     "Mase le fan solary cassé : ",
     "Torio maitre des cartes : ",
     "Turaxyy l'idiot du village : ",
+    "Poulio le patissier éclaté : ",
     "Elfrim, elden ring death counter : ",
     "Sharkk le requin sauvage : ",
+    "0lfu le smurf de zowen : ", 
     "Tioo le sale rat : ",
     "Nightbot le gars sur :  ",
+    "Volta le sanglier limite testeur : ",
     "Xbox la console de poche :  ",
     "Kerking le couche tôt : ",
     "TrayCon le barker de soloQ : ",
     "Mohammed du 56 : ",
+    "Le roi baiseur : ",
     "Le Lait secoué : ",
     "Streamelements le banni : ",
     "Narkuss l'esclave algorythmé : ",
     "Urist le fou du village : ",
+    "Scorflex le vieux stuck silver : ",
     "Vol, joueur nocturne : ",
     "Miaou la ministre canadienne : ",
     "Aosanda vainqueur de la Zlan : ",
     "KoumiGoat le deadgame enjoyer : ",
     "Sac de cul : ",
     "Moulf l'inconnu : ",
-    "Castor le rongeur : ",
+    "Cacastor le rongeur orange : ",
     "Arkhnor le bouffon antique : ",
     "Katare l'étalon italien : ",
     "Shin le modérafeur : ",
@@ -43,22 +49,28 @@ const buttonNames = [
 const buttonImages = [
     "./img/galaemote.png",  
     "./img/babat.png",     
+    "./img/amalinys.png",     
     "./img/aranha.png",     
     "./img/mase.png",     
     "./img/torio.png",     
     "./img/turaxy.png",     
+    "./img/polioo.png",     
     "./img/elfrim.png",     
     "./img/sharkk.png",     
+    "./img/olfu.png", 
     "./img/tio.png",     
     "./img/nightbot.png",     
+    "./img/volta.png",     
     "./img/xbox.png",     
     "./img/kerking.png",     
     "./img/trayton.png",     
     "./img/myrtus.png",     
+    "./img/sakor.png",     
     "./img/milk.png",     
     "./img/streamelements.png",     
     "./img/narkuss.png",     
     "./img/urist.png",     
+    "./img/scorflex.png",     
     "./img/vol.png",     
     "./img/miawe.png",     
     "./img/aosanda.png",     
@@ -84,12 +96,9 @@ document.querySelector(".patch").addEventListener("click", () => {
     
     
     const popupContent = document.createElement("div");
-    popupContent.innerHTML = ` patch notes du 09/06/2024<br><br>
-    - Augmentation du prix de base des personnages de 10 a 30 par 3 <br><br>
-    - Si le même personnage est acheté plusieurs fois, les valeurs d'augmentation du prix ont été doublées au palier 10 et 25<br><br>
-    - Réduction de 0.05 des bonus au cm/clic à l'achat d'un personnage<br><br>
-    - Affichage du bonus à l'achat d'un personnage<br><br>
-    - Les bonus d'achats multiples sont maintenant appliqués au palier 10 et au palier 25 uniquement
+    popupContent.innerHTML = ` patch notes du 10/06/2024<br><br>
+    - Augmentation globale de la difficulté du jeu  <br><br>
+    - Nouveaux personnages<br><br>
 `;
 
     popup.appendChild(popupContent);
@@ -116,7 +125,8 @@ document.querySelector(".patch").addEventListener("click", () => {
 });
 
 
-const buttonClicks = new Array(30).fill(0);
+const buttonClicks = new Array(buttonNames.length).fill(0);
+
 
 let isMuted = false;
 
@@ -152,7 +162,7 @@ document.getElementById('mute-button').addEventListener('click', () => {
  */
 function calculateInitialPrice(index) {
     const exponentMultiplier = index < 10 ? 1.35 : index < 20 ? 1.45 : 1.5;
-    const multiplier = 3; 
+    const multiplier = 3.2; 
     if (index < 10) {
         return basePrice * Math.pow(8, index) * Math.pow(exponentMultiplier, buttonClicks[index]);
     } else if (index < 20) {
@@ -160,7 +170,7 @@ function calculateInitialPrice(index) {
         return base * Math.pow(5, index - 9) * Math.pow(exponentMultiplier, buttonClicks[index]) * multiplier;
     } else {
         const base = basePrice * Math.pow(8, 9) * Math.pow(5, 10);
-        return base * Math.pow(2.2, index - 19) * Math.pow(exponentMultiplier, buttonClicks[index]) * multiplier;
+        return base * Math.pow(2.8, index - 19) * Math.pow(exponentMultiplier, buttonClicks[index]) * multiplier;
     }
 }
 
@@ -210,7 +220,6 @@ function doubleCharacterEffect(index) {
 }
 
 
-
 /**
  * Creates a button for purchasing characters.
  * 
@@ -251,15 +260,15 @@ function createButton(index) {
             let incrementFactor = 0.0075;
 
             if (buttonClicks[index] >= 24) {
-                incrementFactor = 0.08;
+                incrementFactor = 0.07;
             } else if (buttonClicks[index] >= 9) {
-                incrementFactor = 0.04;
+                incrementFactor = 0.03;
             } else if (buttonClicks[index] >= 1) {
                 incrementFactor = 0.0075;
             }
 
             const bonusScorePerSecond = buttons[index].initialPrice * incrementFactor;
-            const bonusClickDamage = buttons[index].initialPrice * (incrementFactor * 1.10);
+            const bonusClickDamage = buttons[index].initialPrice * (incrementFactor * 1.05);
 
             scorePerSecond += bonusScorePerSecond;
             clickDamage += bonusClickDamage;
@@ -270,10 +279,8 @@ function createButton(index) {
             updateScoreDisplay();
             updateButtons();
 
-            // Mettre à jour l'affichage des bonus
             bonusDisplay.innerText = `A l'achat : cm/s: ${formatNumber(bonusScorePerSecond)} , cm/clic: ${formatNumber(bonusClickDamage)}`;
 
-            // Sauvegarder les bonus dans le localStorage
             localStorage.setItem(`buttonBonus_${index}`, JSON.stringify({ bonusScorePerSecond, bonusClickDamage }));
 
             lastTimestamp = 0;
@@ -281,6 +288,14 @@ function createButton(index) {
 
             if (buttonClicks[index] % 10 === 0) {
                 doubleCharacterEffect(index);
+            }
+
+            if (name === "Cacastor le rongeur orange : " && buttonClicks[index] === 1) {
+                alert("Pas grand monde ne semble aimer ce castor. En revanche, castor est amoureux de shin, un amour qui n'est pas réciproque.");
+            }
+
+            if (name === "Katare l'étalon italien : " && buttonClicks[index] === 1) {
+                alert("Pas grand monde ne semble aimer ce castor. En revanche, castor est amoureux de shin, un amour qui n'est pas réciproque.");
             }
 
             if (name === "Shin le modérafeur : " && buttonClicks[index] === 1) {
@@ -369,9 +384,10 @@ function incrementScore(timestamp) {
     window.requestAnimationFrame(incrementScore);
 }
 
-for (let i = 0; i < 30; i++) {
+for (let i = 0; i < buttonNames.length; i++) {
     createButton(i);
 }
+
 
 /**
  * Checks if the player can afford each button and updates their state.
