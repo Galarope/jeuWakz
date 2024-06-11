@@ -31,7 +31,7 @@ const buttonNames = [
     "Le Lait secoué : ",
     "Streamelements le banni : ",
     "Narkuss l'esclave algorythmé : ",
-    "Urist le fou du village : ",
+    "Utruite le fou du village : ",
     "Scorflex le vieux stuck silver : ",
     "Vol, joueur nocturne : ",
     "Miaou la ministre canadienne : ",
