@@ -441,7 +441,7 @@ document.getElementById('reset-button').addEventListener('click', () => {
  * Loads the game data from local storage.
  */
 function loadGameData() {
-    score = parseInt(localStorage.getItem('score')) || 0;
+    score = parseFloat(localStorage.getItem('score')) || 0;
     scorePerSecond = parseFloat(localStorage.getItem('scorePerSecond')) || 0;
     clickDamage = parseFloat(localStorage.getItem('clickDamage')) || 1;
     const savedButtonClicks = JSON.parse(localStorage.getItem('buttonClicks')) || [];
