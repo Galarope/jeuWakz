@@ -31,7 +31,7 @@ const buttonNames = [
     "Le Lait secoué : ",
     "Streamelements le banni : ",
     "Narkuss l'esclave algorythmé : ",
-    "Urist le fou du village : ",
+    "Utruite le fou du village : ",
     "Scorflex le vieux stuck silver : ",
     "Vol, joueur nocturne : ",
     "Miaou la ministre canadienne : ",
@@ -96,9 +96,20 @@ document.querySelector(".patch").addEventListener("click", () => {
     
     
     const popupContent = document.createElement("div");
-    popupContent.innerHTML = ` patch notes du 10/06/2024<br><br>
-    - Augmentation globale de la difficulté du jeu  <br><br>
-    - Nouveaux personnages<br><br>
+    popupContent.innerHTML = ` 1. Ajustement des Formules de Prix <br><br>
+
+    Avant : Les prix augmentaient de manière exponentielle, ce qui créait des paliers difficiles à franchir, mais une fois ces paliers atteints, les joueurs pouvaient progresser très rapidement.<br><br>
+    Après : Les prix augmentent de manière plus contrôlée et logarithmique, ce qui rend chaque achat légèrement plus cher que le précédent sans créer de paliers insurmontables. Cela ralentit la progression en assurant que chaque achat nécessite un effort significatif.<br><br>
+<br>
+2. Ajustement des Bonus<br><br>
+
+    Avant : Les bonus par seconde et par clic augmentaient de manière exponentielle, ce qui pouvait rendre certains personnages trop puissants rapidement et créer des déséquilibres.<br><br>
+    Après : Les bonus augmentent de manière plus graduelle et sont ajustés pour être moins drastiques, ce qui étend la durée nécessaire pour accumuler des scores élevés et atteindre de nouveaux personnages. Les joueurs devront donc passer plus de temps pour augmenter leur score.<br><br>
+<br>
+3. Ajustement des Multiplicateurs a 10 et 25 achats<br><br>
+
+    Avant : Les effets augmentaient les bonus de 100%.<br><br>
+    Après : Les effets augmentent les bonus de 75%.
 `;
 
     popup.appendChild(popupContent);
@@ -215,8 +226,8 @@ function doubleCharacterEffect(index) {
     const initialPrice = buttons[index].initialPrice;
     const count = buttonClicks[index];
     const incrementFactor = count >= 24 ? 0.04 : count >= 9 ? 0.02 : 0.0075;
-    scorePerSecond += initialPrice * incrementFactor * count * 2; 
-    clickDamage += initialPrice * (incrementFactor * 1.15) * count * 2; 
+    scorePerSecond += initialPrice * incrementFactor * count * 1.75; 
+    clickDamage += initialPrice * (incrementFactor) * count * 1.75; 
 }
 
 
@@ -247,8 +258,7 @@ function createButton(index) {
     clickCount.className = 'click-count';
     clickCount.innerText = `Possédé :  ${buttonClicks[index]}`;
 
-
-        const savedBonus = JSON.parse(localStorage.getItem(`buttonBonus_${index}`));
+    const savedBonus = JSON.parse(localStorage.getItem(`buttonBonus_${index}`));
     if (savedBonus) {
         bonusDisplay.innerText = `A l'achat : cm/s: ${formatNumber(savedBonus.bonusScorePerSecond)} , cm/clic: ${formatNumber(savedBonus.bonusClickDamage)}`;
     }
@@ -257,18 +267,9 @@ function createButton(index) {
         if (score >= buttons[index].price()) {
             score -= buttons[index].price();
 
-            let incrementFactor = 0.0075;
-
-            if (buttonClicks[index] >= 24) {
-                incrementFactor = 0.07;
-            } else if (buttonClicks[index] >= 9) {
-                incrementFactor = 0.03;
-            } else if (buttonClicks[index] >= 1) {
-                incrementFactor = 0.0075;
-            }
-
+            const incrementFactor = 0.005 + (0.002 * Math.floor(index / 10));
             const bonusScorePerSecond = buttons[index].initialPrice * incrementFactor;
-            const bonusClickDamage = buttons[index].initialPrice * (incrementFactor * 1.05);
+            const bonusClickDamage = buttons[index].initialPrice * (incrementFactor * 1.1);
 
             scorePerSecond += bonusScorePerSecond;
             clickDamage += bonusClickDamage;
@@ -329,12 +330,7 @@ function createButton(index) {
         element: buttonContainer,
         price: () => buttons[index].currentPrice,
         updatePrice: function () {
-            let priceMultiplier = 1.5;
-            if (buttonClicks[index] >= 24) {
-                priceMultiplier = 2.0;
-            } else if (buttonClicks[index] >= 9) {
-                priceMultiplier = 1.8;
-            }
+            let priceMultiplier = 1.15 + (0.05 * Math.floor(index / 10));
             this.currentPrice = Math.floor(this.currentPrice * priceMultiplier);
             this.element.querySelector('.button').innerText = `${formatNumber(this.currentPrice)} centimètres`;
         },
@@ -343,6 +339,7 @@ function createButton(index) {
     });
     document.getElementById('buttons-container').appendChild(buttonContainer);
 }
+
 
 
 
