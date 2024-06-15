@@ -96,9 +96,20 @@ document.querySelector(".patch").addEventListener("click", () => {
     
     
     const popupContent = document.createElement("div");
-    popupContent.innerHTML = ` patch notes du 10/06/2024<br><br>
-    - Augmentation globale de la difficulté du jeu  <br><br>
-    - Nouveaux personnages<br><br>
+    popupContent.innerHTML = ` 1. Ajustement des Formules de Prix <br><br>
+
+    Avant : Les prix augmentaient de manière exponentielle, ce qui créait des paliers difficiles à franchir, mais une fois ces paliers atteints, les joueurs pouvaient progresser très rapidement.<br><br>
+    Après : Les prix augmentent de manière plus contrôlée et logarithmique, ce qui rend chaque achat légèrement plus cher que le précédent sans créer de paliers insurmontables. Cela ralentit la progression en assurant que chaque achat nécessite un effort significatif.<br><br>
+<br>
+2. Ajustement des Bonus<br><br>
+
+    Avant : Les bonus par seconde et par clic augmentaient de manière exponentielle, ce qui pouvait rendre certains personnages trop puissants rapidement et créer des déséquilibres.<br><br>
+    Après : Les bonus augmentent de manière plus graduelle et sont ajustés pour être moins drastiques, ce qui étend la durée nécessaire pour accumuler des scores élevés et atteindre de nouveaux personnages. Les joueurs devront donc passer plus de temps pour augmenter leur score.<br><br>
+<br>
+3. Ajustement des Multiplicateurs a 10 et 25 achats<br><br>
+
+    Avant : Les effets augmentaient les bonus de 100%.<br><br>
+    Après : Les effets augmentent les bonus de 75%.
 `;
 
     popup.appendChild(popupContent);
@@ -215,8 +226,8 @@ function doubleCharacterEffect(index) {
     const initialPrice = buttons[index].initialPrice;
     const count = buttonClicks[index];
     const incrementFactor = count >= 24 ? 0.04 : count >= 9 ? 0.02 : 0.0075;
-    scorePerSecond += initialPrice * incrementFactor * count * 2; 
-    clickDamage += initialPrice * (incrementFactor * 1.15) * count * 2; 
+    scorePerSecond += initialPrice * incrementFactor * count * 1.75; 
+    clickDamage += initialPrice * (incrementFactor) * count * 1.75; 
 }
 
 
@@ -247,8 +258,7 @@ function createButton(index) {
     clickCount.className = 'click-count';
     clickCount.innerText = `Possédé :  ${buttonClicks[index]}`;
 
-
-        const savedBonus = JSON.parse(localStorage.getItem(`buttonBonus_${index}`));
+    const savedBonus = JSON.parse(localStorage.getItem(`buttonBonus_${index}`));
     if (savedBonus) {
         bonusDisplay.innerText = `A l'achat : cm/s: ${formatNumber(savedBonus.bonusScorePerSecond)} , cm/clic: ${formatNumber(savedBonus.bonusClickDamage)}`;
     }
@@ -257,18 +267,9 @@ function createButton(index) {
         if (score >= buttons[index].price()) {
             score -= buttons[index].price();
 
-            let incrementFactor = 0.0075;
-
-            if (buttonClicks[index] >= 24) {
-                incrementFactor = 0.07;
-            } else if (buttonClicks[index] >= 9) {
-                incrementFactor = 0.03;
-            } else if (buttonClicks[index] >= 1) {
-                incrementFactor = 0.0075;
-            }
-
+            const incrementFactor = 0.005 + (0.002 * Math.floor(index / 10));
             const bonusScorePerSecond = buttons[index].initialPrice * incrementFactor;
-            const bonusClickDamage = buttons[index].initialPrice * (incrementFactor * 1.05);
+            const bonusClickDamage = buttons[index].initialPrice * (incrementFactor * 1.1);
 
             scorePerSecond += bonusScorePerSecond;
             clickDamage += bonusClickDamage;
@@ -290,26 +291,6 @@ function createButton(index) {
                 doubleCharacterEffect(index);
             }
 
-            if (name === "Cacastor le rongeur orange : " && buttonClicks[index] === 1) {
-                alert("Pas grand monde ne semble aimer ce castor. En revanche, castor est amoureux de shin, un amour qui n'est pas réciproque.");
-            }
-
-            if (name === "Katare l'étalon italien : " && buttonClicks[index] === 1) {
-                alert("Pas grand monde ne semble aimer ce castor. En revanche, castor est amoureux de shin, un amour qui n'est pas réciproque.");
-            }
-
-            if (name === "Shin le modérafeur : " && buttonClicks[index] === 1) {
-                alert("Félicitations pour avoir acheté le premier modérateur majeur de la chaine. Shin si tu lis ça, sans toi le chat ne serait pas pareil catRose");
-            }
-
-            if (name === "Rianou la feurfadette : " && buttonClicks[index] === 1) {
-                alert("Félicitations pour avoir acheté le deuxième modérateur majeur de la chaine. Rianou si tu lis ça, merci pour tout ce que tu fais pour la chaine de wakz, et pareil sur solary. Tu es le 3ème feur d'esprit catBlob");
-            }
-
-            if (name === "Wakz le challenger bien monté : " && buttonClicks[index] === 1) {
-                alert("Félicitations tu as réussi à sauver la cité ! Le jeu est maintenant terminé, rien d'autre à faire à part monter ton CPS ou recommencer une partie !");
-            }
-
             saveGameData();
         }
     });
@@ -329,12 +310,7 @@ function createButton(index) {
         element: buttonContainer,
         price: () => buttons[index].currentPrice,
         updatePrice: function () {
-            let priceMultiplier = 1.5;
-            if (buttonClicks[index] >= 24) {
-                priceMultiplier = 2.0;
-            } else if (buttonClicks[index] >= 9) {
-                priceMultiplier = 1.8;
-            }
+            let priceMultiplier = 1.15 + (0.05 * Math.floor(index / 10));
             this.currentPrice = Math.floor(this.currentPrice * priceMultiplier);
             this.element.querySelector('.button').innerText = `${formatNumber(this.currentPrice)} centimètres`;
         },
@@ -343,6 +319,7 @@ function createButton(index) {
     });
     document.getElementById('buttons-container').appendChild(buttonContainer);
 }
+
 
 
 
